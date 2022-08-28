@@ -1,9 +1,9 @@
 import * as THREE from "three"
 
 interface particle {
-  position: THREE.Vector2
-  acceleration: THREE.Vector2
-  velocity: THREE.Vector2
+  position: THREE.Vector3
+  acceleration: THREE.Vector3
+  velocity: THREE.Vector3
   maxSpeed: number
 }
 
@@ -14,10 +14,10 @@ const map = (value, start1, stop1, start2, stop2) =>
 const useParticle = (particle: particle) => {
   const { position, acceleration, velocity, maxSpeed } = particle
 
-  const upper = new THREE.Vector2(maxSpeed, maxSpeed)
+  const upper = new THREE.Vector3(maxSpeed, maxSpeed, maxSpeed)
   const lower = upper.clone().multiplyScalar(-1)
 
-  const applyForce = (force: THREE.Vector2) => acceleration.add(force)
+  const applyForce = (force: THREE.Vector3) => acceleration.add(force)
 
   const updatePosition = () => {
     velocity.add(acceleration)
@@ -26,7 +26,7 @@ const useParticle = (particle: particle) => {
     acceleration.multiplyScalar(0)
   }
 
-  const seek = (target: THREE.Vector2, arrival = false) => {
+  const seek = (target: THREE.Vector3, arrival = false) => {
     let force = target.clone()
     force = force.sub(position)
 
@@ -34,7 +34,7 @@ const useParticle = (particle: particle) => {
     const r = 1
 
     if (arrival) {
-      let slowRadius = 100
+      let slowRadius = 2
       const d = force.length()
 
       if (d < r) {
@@ -52,7 +52,7 @@ const useParticle = (particle: particle) => {
     return force
   }
 
-  const arrive = (target: THREE.Vector2) => seek(target, true)
+  const arrive = (target: THREE.Vector3) => seek(target, true)
 
   return { position, applyForce, updatePosition, seek, arrive }
 }
