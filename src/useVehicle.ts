@@ -1,9 +1,12 @@
 import * as THREE from "three"
+import { random, map } from "./utils"
 
-interface particle {
+interface vehicleProps {
   position: THREE.Vector3
   acceleration: THREE.Vector3
   velocity: THREE.Vector3
+  latitude: number
+  longitude: number
   maxSpeed: number
   maxForce: number
   wanderTheta: number
@@ -14,18 +17,15 @@ interface particle {
   }
 }
 
-//@ts-ignore
-const map = (value, start1, stop1, start2, stop2) =>
-  ((value - start1) / (stop1 - start1)) * stop2 - start2
-
-const useParticle = (particle: particle) => {
-  const {
+const useVehicle = (particle: vehicleProps) => {
+  let {
     position,
     acceleration,
     velocity,
     maxSpeed,
     maxForce,
-    wanderTheta,
+    latitude,
+    longitude,
     edges,
   } = particle
 
@@ -69,20 +69,24 @@ const useParticle = (particle: particle) => {
 
   const arrive = (target: THREE.Vector3) => seek(target, true)
 
-  const wander = (theta: number) => {
+  const wander = (radius: number) => {
     const wanderPoint = velocity.clone()
     wanderPoint.setLength(10)
     wanderPoint.add(position)
 
-    const wanderRadius = 10
-    const x = wanderRadius * Math.cos(theta)
-    const z = wanderRadius * Math.sin(theta)
+    const wanderRadius = radius
+    const x = wanderRadius * Math.sin(latitude) * Math.cos(longitude)
+    const y = wanderRadius * Math.sin(latitude) * Math.sin(longitude)
+    const z = wanderRadius * Math.cos(latitude)
 
-    wanderPoint.add(new THREE.Vector3(x, 0, z))
-    const steer = wanderPoint.sub(position)
-    steer.setLength(maxForce)
+    wanderPoint.add(new THREE.Vector3(x, y, z))
+    const direction = wanderPoint.sub(position)
+    direction.setLength(maxForce)
 
-    return steer
+    latitude += random(-0.3, 0.3)
+    longitude += random(-0.3, 0.3)
+
+    return direction
   }
 
   const checkEdges = () => {
@@ -109,6 +113,7 @@ const useParticle = (particle: particle) => {
 
   return {
     position,
+    velocity,
     applyForce,
     updatePosition,
     seek,
@@ -118,4 +123,5 @@ const useParticle = (particle: particle) => {
   }
 }
 
-export default useParticle
+export { useVehicle }
+export type { vehicleProps }
