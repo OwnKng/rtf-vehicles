@@ -1,6 +1,8 @@
 import { Canvas } from "@react-three/fiber"
 import Sketch from "./Sketch"
 import * as THREE from "three"
+import Flock from "./Flock"
+import { OrbitControls } from "@react-three/drei"
 
 const App = () => (
   <Canvas
@@ -14,13 +16,14 @@ const App = () => (
       camera.lookAt(0, 0, 0)
     }}
   >
+    <OrbitControls />
     <ambientLight intensity={0.2} />
     <spotLight
       intensity={0.8}
       position={[5, 5, 5]}
       lookAt={() => new THREE.Vector3(0, 0, 0)}
     />
-    <Sketch />
+    <Flock />
   </Canvas>
 )
 

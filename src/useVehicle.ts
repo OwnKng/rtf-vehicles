@@ -69,6 +69,35 @@ const useVehicle = (particle: vehicleProps) => {
 
   const arrive = (target: THREE.Vector3) => seek(target, true)
 
+  const separateVehicles = (vehicles: any[]) => {
+    let steer = new THREE.Vector3(0, 0, 0)
+    const sumOfDistances = new THREE.Vector3(0, 0, 0)
+    let numberOfCloseVehicles = 0
+    const desiredSeparation = 1
+
+    vehicles.forEach((v) => {
+      const distanceToVehicle = position.clone().sub(v.position).length()
+
+      if (distanceToVehicle > 0 && distanceToVehicle < desiredSeparation) {
+        const distance = position.clone().sub(v.position)
+        distance.normalize()
+        distance.divideScalar(distanceToVehicle)
+        sumOfDistances.add(distance)
+        numberOfCloseVehicles++
+      }
+    })
+
+    if (numberOfCloseVehicles > 0) {
+      sumOfDistances.divideScalar(numberOfCloseVehicles)
+      sumOfDistances.setLength(maxSpeed)
+
+      steer = sumOfDistances.clone().sub(velocity)
+      steer.clamp(lower, upper)
+    }
+
+    return steer
+  }
+
   const wander = (radius: number) => {
     const wanderPoint = velocity.clone()
     wanderPoint.setLength(10)
@@ -87,6 +116,28 @@ const useVehicle = (particle: vehicleProps) => {
     longitude += random(-0.3, 0.3)
 
     return direction
+  }
+
+  const repeatEdges = () => {
+    const { width, height, depth } = edges
+
+    /* prettier-ignore */
+    if (position.x < 0) position.setX(width)
+
+    /* prettier-ignore */
+    if (position.x > width) position.setX(0)
+
+    /* prettier-ignore */
+    if (position.y < 0) position.setY(height)
+
+    /* prettier-ignore */
+    if (position.y > height) position.setY(0)
+
+    /* prettier-ignore */
+    if (position.z < 0) position.setZ(depth)
+
+    /* prettier-ignore */
+    if (position.z > depth) position.setZ(0)
   }
 
   const checkEdges = () => {
@@ -120,6 +171,8 @@ const useVehicle = (particle: vehicleProps) => {
     arrive,
     wander,
     checkEdges,
+    separateVehicles,
+    repeatEdges,
   }
 }
 
