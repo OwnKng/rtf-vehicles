@@ -1,13 +1,13 @@
 import { useRef } from "react"
 import * as THREE from "three"
-import { vehicleProps } from "./useVehicle"
+import { vehicleProps } from "./hooks/useVehicle"
 import { random } from "./utils"
 import { useFrame } from "@react-three/fiber"
-import { useVehicle } from "./useVehicle"
+import { useVehicle } from "./hooks/useVehicle"
 
-const width = 10
+const width = 30
 const height = 10
-const depth = 10
+const depth = 30
 
 const data = Array.from({ length: 100 }, () => ({
   position: new THREE.Vector3(
@@ -16,9 +16,9 @@ const data = Array.from({ length: 100 }, () => ({
     random(0, depth)
   ),
   acceleration: new THREE.Vector3(0, 0, 0),
-  velocity: new THREE.Vector3(random(0, 10), random(0, 10), random(0, 10)),
-  maxSpeed: 0.025,
-  maxForce: 1,
+  velocity: new THREE.Vector3(random(-5, 5), random(-5, 5), random(-5, 5)),
+  maxSpeed: 0.1,
+  maxForce: 0.5,
   wanderTheta: random(-Math.PI * 0.5, Math.PI * 0.5),
   latitude: Math.PI / 2,
   longitude: Math.PI * 2,
@@ -38,7 +38,7 @@ const Flock = () => {
         ))}
       </group>
       <mesh rotation={[-Math.PI * 0.5, 0, 0]}>
-        <boxBufferGeometry args={[width, height - 0.5, 0.1]} />
+        <boxBufferGeometry args={[width, depth - 0.5, 0.1]} />
         <meshStandardMaterial color='#1e2124' />
       </mesh>
     </group>
@@ -54,19 +54,26 @@ const Vehicle = (vehicle: vehicleProps) => {
     applyForce,
     updatePosition,
     repeatEdges,
+    checkEdges,
     separateVehicles,
+    alignVehicles,
+    cohereVehicles,
   } = useVehicle(vehicle)
 
   useFrame(() => {
-    const force = separateVehicles(data)
+    const sepForce = separateVehicles(data).multiplyScalar(1.1)
+    applyForce(sepForce)
 
-    applyForce(force)
-    repeatEdges()
+    const alignForce = alignVehicles(data)
+    applyForce(alignForce)
+
+    const cohereForce = cohereVehicles(data).multiplyScalar(0.8)
+    applyForce(cohereForce)
 
     updatePosition()
+    repeatEdges()
 
     ref.current.position.set(position.x, position.y, position.z)
-    ref.current.lookAt(velocity)
   })
 
   return (

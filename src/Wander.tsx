@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from "react"
 import { useFrame } from "@react-three/fiber"
-import { useVehicle, vehicleProps } from "./useVehicle"
+import { useVehicle, vehicleProps } from "./hooks/useVehicle"
 import * as THREE from "three"
 
 const Wander = (vehicle: vehicleProps) => {
