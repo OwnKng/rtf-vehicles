@@ -35,6 +35,9 @@ const updatePosition = (vehicle: vehicleType) => {
   return vehicle
 }
 
+const flee = (target: THREE.Vector3, vehicle: vehicleType) =>
+  seek(target, vehicle).multiplyScalar(-1)
+
 const seek = (target: THREE.Vector3, vehicle: vehicleType, arrival = false) => {
   let force = target.clone()
   force = force.sub(vehicle.position)
@@ -248,4 +251,5 @@ export {
   arrive,
   wander,
   avoidEdges,
+  flee,
 }

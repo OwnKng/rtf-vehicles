@@ -8,6 +8,7 @@ import {
   arrive,
   wander,
   avoidEdges,
+  flee,
 } from "../utils/vehicle"
 
 type vehicleType = {
@@ -48,6 +49,7 @@ const useVehicle = ({
     const { position } = updatePosition(vehicleRef.current)
     ref.current.position.set(position.x, position.y, position.z)
 
+    // Steer away from edges
     avoidEdges({ width: 20, height: 10, depth: 20 }, vehicleRef.current)
 
     // Get 10 frames into the future
@@ -68,6 +70,7 @@ const useVehicle = ({
       seek: (target: THREE.Vector3) => seek(target, vehicleRef.current),
       arrive: (target: THREE.Vector3) => arrive(target, vehicleRef.current),
       wander: (radius: number) => wander(radius, vehicleRef.current),
+      flee: (target: THREE.Vector3) => flee(target, vehicleRef.current),
       setPosition,
     },
   ]

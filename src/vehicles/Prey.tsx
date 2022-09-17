@@ -4,10 +4,15 @@ import * as THREE from "three"
 import { Ref } from "react"
 
 const Prey = forwardRef((props: any, ref: Ref<THREE.Mesh>) => {
-  const { wander, applyForce } = props
+  const { wander, applyForce, predator, flee } = props
 
   useFrame(() => {
-    const force = wander(20)
+    //@ts-ignore
+    const distanceToPredator =
+      ref.current.position.distanceTo(predator.current.position) || 20
+
+    const force =
+      distanceToPredator > 10 ? wander(20) : flee(predator.current.position)
     applyForce(force)
   })
 
