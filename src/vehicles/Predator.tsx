@@ -3,11 +3,11 @@ import { useFrame } from "@react-three/fiber"
 import { forwardRef, Ref } from "react"
 
 const Predator = forwardRef((props: any, ref: Ref<THREE.Mesh>) => {
-  const { prey, onCatch, wander, seek, applyForce } = props
+  const { prey, onCatch, wander, pursue, applyForce } = props
 
   useFrame(() => {
     const { position } = prey.current
-    const force = !prey ? wander(20) : seek(position)
+    const force = !prey ? wander(20) : pursue(position)
     applyForce(force)
 
     //@ts-ignore

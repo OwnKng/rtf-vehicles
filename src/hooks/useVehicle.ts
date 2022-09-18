@@ -8,6 +8,7 @@ import {
   arrive,
   wander,
   avoidEdges,
+  pursue,
   flee,
 } from "../utils/vehicle"
 
@@ -19,6 +20,11 @@ type vehicleType = {
   maxForce: number
   latitude?: number
   longitude?: number
+  world?: {
+    width: number
+    height: number
+    depth: number
+  }
 }
 
 const useVehicle = ({
@@ -29,6 +35,11 @@ const useVehicle = ({
   maxForce,
   latitude = Math.PI / 2,
   longitude = Math.PI / 2,
+  world = {
+    width: 10,
+    height: 10,
+    depth: 10,
+  },
 }: vehicleType): [Ref<THREE.Mesh>, any] => {
   const vehicleRef = useRef({
     position,
@@ -50,7 +61,8 @@ const useVehicle = ({
     ref.current.position.set(position.x, position.y, position.z)
 
     // Steer away from edges
-    avoidEdges({ width: 20, height: 20, depth: 20 }, vehicleRef.current)
+    const { width, height, depth } = world
+    avoidEdges({ width, height, depth }, vehicleRef.current)
 
     // Get 10 frames into the future
     const futurePosition = velocity.clone().setLength(10).add(position)
@@ -71,6 +83,7 @@ const useVehicle = ({
       arrive: (target: THREE.Vector3) => arrive(target, vehicleRef.current),
       wander: (radius: number) => wander(radius, vehicleRef.current),
       flee: (target: THREE.Vector3) => flee(target, vehicleRef.current),
+      pursue: (target: THREE.Vector3) => pursue(target, vehicleRef.current),
       setPosition,
     },
   ]

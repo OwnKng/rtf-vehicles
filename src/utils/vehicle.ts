@@ -67,6 +67,12 @@ const seek = (target: THREE.Vector3, vehicle: vehicleType, arrival = false) => {
 const arrive = (target: THREE.Vector3, vehicle: vehicleType) =>
   seek(target, vehicle, true)
 
+const pursue = (target: THREE.Vector3, vehicle: vehicleType) => {
+  const { velocity } = vehicle
+
+  return seek(target.clone().add(velocity.clone().multiplyScalar(10)), vehicle)
+}
+
 const wander = (radius: number, vehicle: wanderType) => {
   const wanderPoint = vehicle.velocity.clone()
   wanderPoint.setLength(20)
@@ -254,4 +260,5 @@ export {
   wander,
   avoidEdges,
   flee,
+  pursue,
 }

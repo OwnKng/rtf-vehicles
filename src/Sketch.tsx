@@ -8,8 +8,13 @@ const predatorData = {
   position: new THREE.Vector3(random(0, 20), random(0, 20), random(0, 20)),
   acceleration: new THREE.Vector3(0, 0, 0),
   velocity: new THREE.Vector3(0, 0, 0),
-  maxSpeed: 0.2,
+  maxSpeed: 0.3,
   maxForce: 0.01,
+  world: {
+    width: 10,
+    height: 20,
+    depth: 10,
+  },
 }
 
 const preyData = {
@@ -17,7 +22,12 @@ const preyData = {
   acceleration: new THREE.Vector3(0, 0, 0),
   velocity: new THREE.Vector3(0, 0, 0),
   maxSpeed: 0.1,
-  maxForce: 0.01,
+  maxForce: 0.05,
+  world: {
+    width: 20,
+    height: 20,
+    depth: 20,
+  },
 }
 
 const Sketch = () => {
@@ -38,6 +48,10 @@ const Sketch = () => {
       <mesh position={[0, -5, 0]} rotation={[0, -Math.PI * 0.5, 0]}>
         <boxBufferGeometry args={[100, 0.1, 100]} />
         <meshPhongMaterial flatShading shininess={8} color='#1e2124' />
+      </mesh>
+      <mesh position={[10, 10, 10]}>
+        <boxBufferGeometry args={[20, 20, 20]} />
+        <meshBasicMaterial transparent opacity={0.2} />
       </mesh>
     </group>
   )
