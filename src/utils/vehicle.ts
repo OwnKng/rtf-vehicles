@@ -29,7 +29,7 @@ const applyForce = (force: Vector3, vehicle: vehicleType) => {
 const updatePosition = (vehicle: vehicleType) => {
   vehicle.velocity.add(vehicle.acceleration)
   vehicle.position.add(vehicle.velocity)
-  vehicle.velocity.clampScalar(-vehicle.maxSpeed, vehicle.maxSpeed)
+  vehicle.velocity.clampLength(-vehicle.maxSpeed, vehicle.maxSpeed)
   vehicle.acceleration.multiplyScalar(0)
 
   return vehicle
@@ -59,7 +59,7 @@ const seek = (target: THREE.Vector3, vehicle: vehicleType, arrival = false) => {
 
   force.setLength(desiredSpeed)
   force.sub(vehicle.velocity)
-  force.clampScalar(-vehicle.maxForce, vehicle.maxForce)
+  force.clampLength(-vehicle.maxForce, vehicle.maxForce)
 
   return force
 }
@@ -99,51 +99,53 @@ const avoidEdges = (dimensions: dimensionsType, vehicle: vehicleType) => {
   const { position, maxSpeed, velocity, maxForce } = vehicle
   const { width, height, depth } = dimensions
 
-  if (position.x < 0)
-    applyForce(
-      new Vector3(maxSpeed, velocity.y, velocity.z)
-        .sub(velocity)
-        .clampScalar(-maxForce, maxForce),
-      vehicle
-    )
+  if (position.x < 0) {
+    const desired = new Vector3(maxSpeed, velocity.y, velocity.z)
+    const steer = desired.sub(velocity)
+    steer.clampLength(-maxForce, maxForce)
 
-  if (position.x > width)
-    applyForce(
-      new Vector3(-maxSpeed, velocity.y, velocity.z)
-        .sub(velocity)
-        .clampScalar(-maxForce, maxForce),
-      vehicle
-    )
+    applyForce(steer, vehicle)
+  }
 
-  if (position.y < 0)
-    applyForce(
-      new Vector3(velocity.x, maxSpeed, velocity.z)
-        .sub(velocity)
-        .clampScalar(-maxForce, maxForce),
-      vehicle
-    )
-  if (position.y > height)
-    applyForce(
-      new Vector3(velocity.x, -maxSpeed, velocity.z)
-        .sub(velocity)
-        .clampScalar(-maxForce, maxForce),
-      vehicle
-    )
+  if (position.x > width) {
+    const desired = new Vector3(-maxSpeed, velocity.y, velocity.z)
+    const steer = desired.sub(velocity)
+    steer.clampLength(-maxForce, maxForce)
 
-  if (position.z < 0)
-    applyForce(
-      new Vector3(velocity.x, velocity.z, maxSpeed)
-        .sub(velocity)
-        .clampScalar(-maxForce, maxForce),
-      vehicle
-    )
-  if (position.z > depth)
-    applyForce(
-      new Vector3(velocity.x, velocity.y, -maxSpeed)
-        .sub(velocity)
-        .clampScalar(-maxForce, maxForce),
-      vehicle
-    )
+    applyForce(steer, vehicle)
+  }
+
+  if (position.y < 0) {
+    const desired = new Vector3(velocity.x, maxSpeed, velocity.z)
+    const steer = desired.sub(velocity)
+    steer.clampLength(-maxForce, maxForce)
+
+    applyForce(steer, vehicle)
+  }
+
+  if (position.y > height) {
+    const desired = new Vector3(velocity.x, -maxSpeed, velocity.z)
+    const steer = desired.sub(velocity)
+    steer.clampLength(-maxForce, maxForce)
+
+    applyForce(steer, vehicle)
+  }
+
+  if (position.z < 0) {
+    const desired = new Vector3(velocity.x, velocity.y, maxSpeed)
+    const steer = desired.sub(velocity)
+    steer.clampLength(-maxForce, maxForce)
+
+    applyForce(steer, vehicle)
+  }
+
+  if (position.z > depth) {
+    const desired = new Vector3(velocity.x, velocity.y, -maxSpeed)
+    const steer = desired.sub(velocity)
+    steer.clampLength(-maxForce, maxForce)
+
+    applyForce(steer, vehicle)
+  }
 
   return vehicle
 }

@@ -50,7 +50,7 @@ const useVehicle = ({
     ref.current.position.set(position.x, position.y, position.z)
 
     // Steer away from edges
-    avoidEdges({ width: 20, height: 10, depth: 20 }, vehicleRef.current)
+    avoidEdges({ width: 20, height: 20, depth: 20 }, vehicleRef.current)
 
     // Get 10 frames into the future
     const futurePosition = velocity.clone().setLength(10).add(position)

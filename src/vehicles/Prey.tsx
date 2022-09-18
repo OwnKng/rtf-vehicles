@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useFrame } from "@react-three/fiber"
 import { forwardRef } from "react"
 import * as THREE from "three"
@@ -7,7 +8,6 @@ const Prey = forwardRef((props: any, ref: Ref<THREE.Mesh>) => {
   const { wander, applyForce, predator, flee } = props
 
   useFrame(() => {
-    //@ts-ignore
     const distanceToPredator =
       ref.current.position.distanceTo(predator.current.position) || 20
 
