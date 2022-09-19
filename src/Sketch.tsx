@@ -1,62 +1,63 @@
+import { useFrame } from "@react-three/fiber"
+import { useRef, useState } from "react"
 import * as THREE from "three"
-import Predator from "./vehicles/Predator"
-import Prey from "./vehicles/Prey"
+import { useRepeller } from "./hooks/useRepeller"
 import { useVehicle } from "./hooks/useVehicle"
-import { random } from "./utils"
+import { random, map } from "./utils"
+import { applyForce, vehicleType } from "./utils/vehicle"
 
-const predatorData = {
-  position: new THREE.Vector3(random(0, 20), random(0, 20), random(0, 20)),
+const vehicleData = Array.from({ length: 50 }, () => ({
+  position: new THREE.Vector3(random(0, 10), 0, random(0, 10)),
   acceleration: new THREE.Vector3(0, 0, 0),
   velocity: new THREE.Vector3(0, 0, 0),
   maxSpeed: 0.3,
   maxForce: 0.01,
-  world: {
-    width: 10,
-    height: 20,
-    depth: 10,
-  },
+}))
+
+const repellerData = {
+  position: new THREE.Vector3(0, 0, 0),
+  strength: 1,
+  radius: 10,
 }
 
-const preyData = {
-  position: new THREE.Vector3(5, 5, 5),
-  acceleration: new THREE.Vector3(0, 0, 0),
-  velocity: new THREE.Vector3(0, 0, 0),
-  maxSpeed: 0.1,
-  maxForce: 0.05,
-  world: {
-    width: 20,
-    height: 20,
-    depth: 20,
-  },
-}
+const Wanderer = ({ data, repeller }: any) => {
+  const [vehicle, api] = useVehicle(data)
 
-const Sketch = () => {
-  const [predator, updatePredator] = useVehicle(predatorData)
-  const [prey, updatePrey] = useVehicle(preyData)
+  useFrame(() => {
+    const seeker = api.wander(20)
+    api.applyForce(seeker)
+
+    api.applyRepeller(repeller)
+  })
 
   return (
-    <group>
-      <Prey ref={prey} {...updatePrey} predator={predator} />
-      <Predator
-        ref={predator}
-        {...updatePredator}
-        prey={prey}
-        onCatch={() =>
-          updatePrey.setPosition([random(0, 20), random(0, 20), random(0, 20)])
-        }
-      />
-      <mesh position={[0, -5, 0]} rotation={[0, -Math.PI * 0.5, 0]}>
-        <boxBufferGeometry args={[100, 0.1, 100]} />
-        <meshPhongMaterial flatShading shininess={8} color='#1e2124' />
-      </mesh>
-      <mesh position={[10, 10, 10]}>
-        <boxBufferGeometry args={[20, 20, 20]} />
-        <meshBasicMaterial transparent opacity={0.2} />
-      </mesh>
-    </group>
+    <mesh ref={vehicle}>
+      <cylinderBufferGeometry args={[0, 0.5, 2, 3]} />
+      <meshPhongMaterial flatShading shininess={8} color='#5ADBFF' />
+    </mesh>
   )
 }
 
-//
+const Sketch = () => {
+  const ref = useRef<THREE.Mesh>(null!)
+
+  const [repeller] = useRepeller(repellerData)
+
+  return (
+    <>
+      {vehicleData.map((d, i) => (
+        <Wanderer key={`seeker-${i}`} data={d} repeller={repeller} />
+      ))}
+      <mesh>
+        <sphereBufferGeometry args={[repellerData.radius - 2, 8, 8]} />
+        <meshBasicMaterial wireframe />
+      </mesh>
+      <mesh rotation={[-Math.PI * 0.5, 0, 0]}>
+        <planeBufferGeometry args={[20, 20]} />
+        <meshBasicMaterial color='white' wireframe />
+      </mesh>
+    </>
+  )
+}
 
 export default Sketch

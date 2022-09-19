@@ -3,6 +3,7 @@ import { Ref, useLayoutEffect, useRef } from "react"
 import * as THREE from "three"
 import {
   applyForce,
+  applyRepeller,
   updatePosition,
   seek,
   arrive,
@@ -36,9 +37,9 @@ const useVehicle = ({
   latitude = Math.PI / 2,
   longitude = Math.PI / 2,
   world = {
-    width: 10,
-    height: 10,
-    depth: 10,
+    width: 20,
+    height: 20,
+    depth: 20,
   },
 }: vehicleType): [Ref<THREE.Mesh>, any] => {
   const vehicleRef = useRef({
@@ -85,6 +86,8 @@ const useVehicle = ({
       flee: (target: THREE.Vector3) => flee(target, vehicleRef.current),
       pursue: (target: THREE.Vector3) => pursue(target, vehicleRef.current),
       setPosition,
+      applyRepeller: (repeller: any) =>
+        applyRepeller(repeller, vehicleRef.current),
     },
   ]
 }
