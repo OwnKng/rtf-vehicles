@@ -2,7 +2,7 @@ import { useRef } from "react"
 import { vehicleType } from "../utils/vehicle"
 import { repel, repellerType } from "../utils/repeller"
 
-const useRepeller = (data: repellerType) => {
+const useRepeller = (data: repellerType): [ref: repellerType, api: any] => {
   const ref = useRef<repellerType>(data)
 
   const setPosition = (x: number, y: number, z: number) =>
@@ -13,7 +13,7 @@ const useRepeller = (data: repellerType) => {
   const setStrength = (s: number) => (ref.current.strength = s)
 
   return [
-    ref,
+    ref.current,
     {
       repel: (vehicle: vehicleType) => repel(vehicle, ref.current),
       setPosition,

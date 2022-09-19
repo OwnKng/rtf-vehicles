@@ -1,28 +1,22 @@
 import { useFrame } from "@react-three/fiber"
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import * as THREE from "three"
 import { useRepeller } from "./hooks/useRepeller"
 import { useVehicle } from "./hooks/useVehicle"
 import { random } from "./utils"
 
-const vehicleData = Array.from({ length: 50 }, () => ({
-  position: new THREE.Vector3(random(0, 10), 0, random(0, 10)),
+const vehicleData = Array.from({ length: 1000 }, () => ({
+  position: new THREE.Vector3(random(0, 10), random(0, 10), random(0, 10)),
   acceleration: new THREE.Vector3(0, 0, 0),
   velocity: new THREE.Vector3(0, 0, 0),
-  maxSpeed: 0.3,
+  maxSpeed: 0.2,
   maxForce: 0.01,
   world: {
-    width: 10,
-    height: 5,
-    depth: 10,
+    width: 20,
+    height: 20,
+    depth: 20,
   },
 }))
-
-const repellerData = {
-  position: new THREE.Vector3(0, 0, 0),
-  strength: 1,
-  radius: 10,
-}
 
 const Wanderer = ({ data, repel }: any) => {
   const [vehicle, api] = useVehicle(data)
@@ -30,7 +24,6 @@ const Wanderer = ({ data, repel }: any) => {
   useFrame(() => {
     const seeker = api.wander(20)
     api.applyForce(seeker)
-
     api.applyRepeller(repel)
   })
 
@@ -42,20 +35,22 @@ const Wanderer = ({ data, repel }: any) => {
   )
 }
 
+const r = 10
+
 const Sketch = () => {
   const ref = useRef<THREE.Mesh>(null!)
-  const [repeller, api] = useRepeller(repellerData)
-  const [mouse, setMouse] = useState<THREE.Vector3>(new THREE.Vector3(0, 0, 0))
+  const [repeller, api] = useRepeller({
+    position: new THREE.Vector3(0, 0, 0),
+    strength: 1,
+    radius: r,
+  })
 
-  useFrame(({ clock }) => {
-    const radius = 5 + (Math.sin(clock.getElapsedTime()) * 0.5 + 0.5) * 5
+  const mouse = useRef(new THREE.Vector3(0, 0, 0))
 
-    api.setRadius(radius)
-    api.setPosition(mouse.x, mouse.y, mouse.z)
+  useFrame(() => {
+    api.setPosition(mouse.current.x, mouse.current.y, mouse.current.z)
 
-    ref.current.scale.setScalar(repeller.current.radius)
-
-    const { x, y, z } = repeller.current.position
+    const { x, y, z } = repeller.position
     ref.current.position.set(x, y, z)
   })
 
@@ -65,12 +60,12 @@ const Sketch = () => {
         <Wanderer key={`seeker-${i}`} data={d} repel={api.repel} />
       ))}
       <mesh ref={ref}>
-        <sphereBufferGeometry args={[1, 8, 8]} />
+        <sphereBufferGeometry args={[r, 8, 8]} />
         <meshBasicMaterial wireframe />
       </mesh>
       <mesh
         rotation={[-Math.PI * 0.5, 0, 0]}
-        onPointerMove={(e) => setMouse(e.point)}
+        onPointerMove={(e) => (mouse.current = e.point)}
       >
         <planeBufferGeometry args={[100, 100, 10, 10]} />
         <meshBasicMaterial color='white' wireframe />
