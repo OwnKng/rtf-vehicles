@@ -3,8 +3,7 @@ import { useRef, useState } from "react"
 import * as THREE from "three"
 import { useRepeller } from "./hooks/useRepeller"
 import { useVehicle } from "./hooks/useVehicle"
-import { random, map } from "./utils"
-import { applyForce, vehicleType } from "./utils/vehicle"
+import { random } from "./utils"
 
 const vehicleData = Array.from({ length: 50 }, () => ({
   position: new THREE.Vector3(random(0, 10), 0, random(0, 10)),
@@ -12,6 +11,11 @@ const vehicleData = Array.from({ length: 50 }, () => ({
   velocity: new THREE.Vector3(0, 0, 0),
   maxSpeed: 0.3,
   maxForce: 0.01,
+  world: {
+    width: 10,
+    height: 5,
+    depth: 10,
+  },
 }))
 
 const repellerData = {
@@ -20,14 +24,14 @@ const repellerData = {
   radius: 10,
 }
 
-const Wanderer = ({ data, repeller }: any) => {
+const Wanderer = ({ data, repel }: any) => {
   const [vehicle, api] = useVehicle(data)
 
   useFrame(() => {
     const seeker = api.wander(20)
     api.applyForce(seeker)
 
-    api.applyRepeller(repeller)
+    api.applyRepeller(repel)
   })
 
   return (
@@ -40,20 +44,35 @@ const Wanderer = ({ data, repeller }: any) => {
 
 const Sketch = () => {
   const ref = useRef<THREE.Mesh>(null!)
+  const [repeller, api] = useRepeller(repellerData)
+  const [mouse, setMouse] = useState<THREE.Vector3>(new THREE.Vector3(0, 0, 0))
 
-  const [repeller] = useRepeller(repellerData)
+  useFrame(({ clock }) => {
+    const radius = 5 + (Math.sin(clock.getElapsedTime()) * 0.5 + 0.5) * 5
+
+    api.setRadius(radius)
+    api.setPosition(mouse.x, mouse.y, mouse.z)
+
+    ref.current.scale.setScalar(repeller.current.radius)
+
+    const { x, y, z } = repeller.current.position
+    ref.current.position.set(x, y, z)
+  })
 
   return (
     <>
       {vehicleData.map((d, i) => (
-        <Wanderer key={`seeker-${i}`} data={d} repeller={repeller} />
+        <Wanderer key={`seeker-${i}`} data={d} repel={api.repel} />
       ))}
-      <mesh>
-        <sphereBufferGeometry args={[repellerData.radius - 2, 8, 8]} />
+      <mesh ref={ref}>
+        <sphereBufferGeometry args={[1, 8, 8]} />
         <meshBasicMaterial wireframe />
       </mesh>
-      <mesh rotation={[-Math.PI * 0.5, 0, 0]}>
-        <planeBufferGeometry args={[20, 20]} />
+      <mesh
+        rotation={[-Math.PI * 0.5, 0, 0]}
+        onPointerMove={(e) => setMouse(e.point)}
+      >
+        <planeBufferGeometry args={[100, 100, 10, 10]} />
         <meshBasicMaterial color='white' wireframe />
       </mesh>
     </>

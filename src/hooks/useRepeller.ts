@@ -1,55 +1,26 @@
 import { useRef } from "react"
-import { map } from "../utils"
 import { vehicleType } from "../utils/vehicle"
-import * as THREE from "three"
-
-type repellerType = {
-  strength: number
-  position: THREE.Vector3
-  radius: number
-}
-
-const repel = (vehicle: vehicleType, repeller: repellerType) => {
-  const direction = repeller.position.clone().sub(vehicle.position)
-  let distance = direction.length()
-
-  if (distance > repeller.radius) return new THREE.Vector3(0, 0, 0)
-
-  const strength = (repeller.radius - distance) / repeller.radius
-  const force = -1 * repeller.strength * strength
-
-  direction.normalize().multiplyScalar(force)
-  direction.clampLength(-vehicle.maxSpeed, vehicle.maxSpeed)
-
-  return direction
-
-  //   const strength =
-  //     ((repeller.radius - distance) / repeller.radius) * repeller.strength
-
-  //   direction.multiplyScalar(-1 * strength)
-
-  //   return direction.sub(vehicle.velocity)
-
-  //   distance = Math.max(Math.sqrt(distance), distance)
-  //   distance = Math.min(distance, 100)
-
-  //   let force = repeller.strength / distance ** 2
-  //   force *= -1
-  //   console.log(distance, force)
-
-  //   direction.normalize().multiplyScalar(force)
-
-  //   return direction
-
-  //   let steer = new THREE.Vector3(0, 0, 0)
-
-  //   return steer
-}
+import { repel, repellerType } from "../utils/repeller"
 
 const useRepeller = (data: repellerType) => {
-  const ref = useRef(data)
+  const ref = useRef<repellerType>(data)
 
-  return [{ repel: (vehicle: vehicleType) => repel(vehicle, ref.current) }]
+  const setPosition = (x: number, y: number, z: number) =>
+    ref.current.position.set(x, y, z)
+
+  const setRadius = (r: number) => (ref.current.radius = r)
+
+  const setStrength = (s: number) => (ref.current.strength = s)
+
+  return [
+    ref,
+    {
+      repel: (vehicle: vehicleType) => repel(vehicle, ref.current),
+      setPosition,
+      setRadius,
+      setStrength,
+    },
+  ]
 }
 
 export { useRepeller }

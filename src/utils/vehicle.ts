@@ -47,8 +47,8 @@ type repellerType = {
   repel: (vehicle: vehicleType) => THREE.Vector3
 }
 
-const applyRepeller = (repeller: repellerType, vehicle: vehicleType) =>
-  applyForce(repeller.repel(vehicle), vehicle)
+const applyRepeller = (repel: any, vehicle: vehicleType) =>
+  applyForce(repel(vehicle), vehicle)
 
 const flee = (target: THREE.Vector3, vehicle: vehicleType) =>
   seek(target, vehicle).multiplyScalar(-1)
