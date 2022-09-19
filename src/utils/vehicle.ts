@@ -47,6 +47,9 @@ type repellerType = {
   repel: (vehicle: vehicleType) => THREE.Vector3
 }
 
+const distanceTo = (target: Vector3, vehicle: vehicleType) =>
+  vehicle.position.clone().sub(target).length()
+
 const applyRepeller = (repel: any, vehicle: vehicleType) =>
   applyForce(repel(vehicle), vehicle)
 
@@ -196,4 +199,5 @@ export {
   avoidEdges,
   flee,
   pursue,
+  distanceTo,
 }

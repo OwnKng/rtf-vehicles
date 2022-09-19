@@ -1,8 +1,8 @@
 import { useFrame } from "@react-three/fiber"
 import { useRef, useState } from "react"
 import * as THREE from "three"
-import { useVehicle } from "./hooks/useVehicle"
-import { random } from "./utils"
+import { useVehicle } from "../hooks/useVehicle"
+import { random } from "../utils"
 
 const vehicleData = {
   position: new THREE.Vector3(random(0, 10), random(0, 10), random(0, 10)),
@@ -12,12 +12,12 @@ const vehicleData = {
   maxForce: 0.01,
 }
 
-type birdProps = {
+type boidProps = {
   home: THREE.Vector3
   predator: THREE.Vector3 | null
 }
 
-const Bird = ({ home, predator }: birdProps) => {
+const Boid = ({ home, predator }: boidProps) => {
   const [vehicle, api] = useVehicle(vehicleData)
 
   useFrame(() => {
@@ -39,7 +39,7 @@ const Bird = ({ home, predator }: birdProps) => {
 const r = 10
 const homePosition = new THREE.Vector3(0, 1, 0)
 
-const Sketch = () => {
+const Flee = () => {
   const ref = useRef<THREE.Mesh>(null!)
   const [predPosition, setPredPosition] = useState<THREE.Vector3>(
     new THREE.Vector3(0, 0, 0)
@@ -52,7 +52,7 @@ const Sketch = () => {
 
   return (
     <>
-      <Bird home={homePosition} predator={predPosition} />
+      <Boid home={homePosition} predator={predPosition} />
       <mesh position={[homePosition.x, homePosition.y - 1, homePosition.z]}>
         <boxBufferGeometry args={[2, 0.1, 2]} />
         <meshPhongMaterial flatShading shininess={1} color='#F2E863' />
@@ -72,4 +72,4 @@ const Sketch = () => {
   )
 }
 
-export default Sketch
+export default Flee

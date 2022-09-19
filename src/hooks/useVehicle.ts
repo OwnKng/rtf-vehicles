@@ -11,6 +11,7 @@ import {
   avoidEdges,
   pursue,
   flee,
+  distanceTo,
 } from "../utils/vehicle"
 
 type vehicleType = {
@@ -88,6 +89,8 @@ const useVehicle = ({
       setPosition,
       applyRepeller: (repeller: any) =>
         applyRepeller(repeller, vehicleRef.current),
+      distanceTo: (target: THREE.Vector3) =>
+        distanceTo(target, vehicleRef.current),
     },
   ]
 }

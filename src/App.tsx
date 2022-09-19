@@ -5,11 +5,11 @@ import { OrbitControls } from "@react-three/drei"
 
 const App = () => (
   <Canvas
-    shadows
     onCreated={({ camera }) => {
-      camera.position.setFromSphericalCoords(20, Math.PI / 3, Math.PI / 4)
+      camera.position.setFromSphericalCoords(25, Math.PI / 3, Math.PI / 4)
       camera.lookAt(0, 0, 0)
     }}
+    shadows
   >
     <OrbitControls />
     <ambientLight intensity={0.4} />
