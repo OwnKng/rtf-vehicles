@@ -15,6 +15,7 @@ import {
 } from "../utils/vehicle"
 
 type vehicleType = {
+  id: number
   position: THREE.Vector3
   acceleration: THREE.Vector3
   velocity: THREE.Vector3
@@ -30,6 +31,7 @@ type vehicleType = {
 }
 
 const useVehicle = ({
+  id,
   position,
   acceleration,
   velocity,
@@ -44,6 +46,7 @@ const useVehicle = ({
   },
 }: vehicleType): [Ref<THREE.Mesh>, any] => {
   const vehicleRef = useRef({
+    id,
     position,
     acceleration,
     velocity,

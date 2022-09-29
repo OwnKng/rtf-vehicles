@@ -2,6 +2,7 @@ import { Vector3 } from "three"
 import { map, random } from "./index"
 
 export type vehicleType = {
+  id: number
   position: Vector3
   acceleration: Vector3
   velocity: Vector3
@@ -40,11 +41,86 @@ const updatePosition = (vehicle: vehicleType) => {
   return vehicle
 }
 
-type repellerType = {
-  strength: number
-  position: THREE.Vector3
-  radius: number
-  repel: (vehicle: vehicleType) => THREE.Vector3
+const separateVehicles = (vehicle: vehicleType, vehicles: vehicleType[]) => {
+  let steer = new Vector3(0, 0, 0)
+  const sum = new Vector3(0, 0, 0)
+
+  let numberOfCloseVehicles = 0
+  const desiredSeparation = 1
+
+  vehicles.forEach((v) => {
+    const distanceToVehicle = vehicle.position.clone().sub(v.position).length()
+
+    if (distanceToVehicle > 0 && distanceToVehicle < desiredSeparation) {
+      const distance = vehicle.position.clone().sub(v.position)
+      distance.normalize()
+      distance.divideScalar(distanceToVehicle)
+      sum.add(distance)
+      numberOfCloseVehicles++
+    }
+  })
+
+  if (numberOfCloseVehicles > 0) {
+    sum.divideScalar(numberOfCloseVehicles)
+    sum.setLength(vehicle.maxSpeed)
+
+    steer = sum.clone().sub(vehicle.velocity)
+    steer.clampLength(-vehicle.maxForce, vehicle.maxForce)
+  }
+
+  return steer
+}
+
+const alignVehicles = (vehicle: vehicleType, vehicles: vehicleType[]) => {
+  let steer = new Vector3(0, 0, 0)
+  const neighborhoodDistance = 2
+  const sumOfVelocity = new Vector3(0, 0, 0)
+
+  let countOfCloseVehicles = 0
+
+  vehicles.forEach((v: vehicleType) => {
+    const distanceToVehicle = distanceTo(vehicle.position, v)
+
+    if (distanceToVehicle > 0 && distanceToVehicle < neighborhoodDistance) {
+      sumOfVelocity.add(v.velocity)
+      countOfCloseVehicles++
+    }
+  })
+
+  if (countOfCloseVehicles > 0) {
+    sumOfVelocity.divideScalar(vehicles.length)
+    sumOfVelocity.setLength(vehicle.maxSpeed)
+
+    steer = sumOfVelocity.clone().sub(vehicle.velocity)
+    steer.clampLength(-vehicle.maxForce, vehicle.maxForce)
+  }
+
+  return steer
+}
+
+const cohereVehicles = (vehicle: vehicleType, vehicles: vehicleType[]) => {
+  let steer = new Vector3(0, 0, 0)
+  const neighborhoodDistance = 2
+  const sumOfLocations = new Vector3(0, 0, 0)
+
+  let countOfCloseVehicles = 0
+
+  vehicles.forEach((v: vehicleType) => {
+    const distanceToVehicle = distanceTo(vehicle.position, v)
+
+    if (distanceToVehicle > 0 && distanceToVehicle < neighborhoodDistance) {
+      sumOfLocations.add(v.velocity)
+      countOfCloseVehicles++
+    }
+  })
+
+  if (countOfCloseVehicles > 0) {
+    sumOfLocations.divideScalar(vehicles.length)
+
+    steer = seek(sumOfLocations, vehicle)
+  }
+
+  return steer
 }
 
 const distanceTo = (target: Vector3, vehicle: vehicleType) =>
@@ -188,8 +264,51 @@ const checkEdges = (
   return vehicle
 }
 
+//_ grid
+
+const createVehicleGrid = (
+  width: number,
+  height: number,
+  nRows: number,
+  nCols: number
+) => {
+  let grid = Array.from({ length: nRows * nCols }, () => [])
+
+  const cellWidth = width / nCols
+  const cellHeight = height / nRows
+
+  const placeInCell = (vehicle: vehicleType) => {
+    const { position } = vehicle
+
+    let x = Math.floor(position.x / cellWidth)
+    let y = Math.floor(position.y / cellHeight)
+
+    x = x > nRows ? nRows : x
+    x = x < 0 ? 0 : x
+
+    y = y > nCols ? nCols : y
+    y = y < 0 ? 0 : y
+
+    // Remove previous record of the vehicle
+    grid = grid.map((ids) => ids.filter((id) => id !== vehicle.id))
+
+    // Add it to new array
+    const index = x + y * nCols
+
+    //@ts-ignore
+    grid[index] = grid[index].concat(vehicle.id)
+
+    return index
+  }
+
+  const getVehiclesInCells = (index: number) => grid[index]
+
+  return { placeInCell, getVehiclesInCells }
+}
+
 export {
   applyForce,
+  alignVehicles,
   updatePosition,
   checkEdges,
   applyRepeller,
@@ -200,4 +319,7 @@ export {
   flee,
   pursue,
   distanceTo,
+  separateVehicles,
+  cohereVehicles,
+  createVehicleGrid,
 }
