@@ -1,8 +1,6 @@
 import { Canvas } from "@react-three/fiber"
 import Sketch from "./Sketch"
 import * as THREE from "three"
-import { OrbitControls } from "@react-three/drei"
-import PredatorAndPreyFlock from "./examples/PredatorAndPreyFlock"
 
 const App = () => (
   <Canvas
@@ -12,14 +10,13 @@ const App = () => (
     }}
     shadows
   >
-    <OrbitControls />
     <ambientLight intensity={0.4} />
     <spotLight
       intensity={0.8}
       position={[0, 50, 0]}
       lookAt={() => new THREE.Vector3(0, 0, 0)}
     />
-    <PredatorAndPreyFlock />
+    <Sketch />
   </Canvas>
 )
 
