@@ -2,7 +2,7 @@ import { Vector3 } from "three"
 import { map, random } from "./index"
 
 export type vehicleType = {
-  id: number
+  id: string
   position: Vector3
   acceleration: Vector3
   velocity: Vector3

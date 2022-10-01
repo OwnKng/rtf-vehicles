@@ -2,11 +2,12 @@ import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { useRef, useLayoutEffect } from "react"
 import { avoidEdges, updatePosition } from "../utils/vehicle"
+import { v4 as uuidv4 } from "uuid"
+import { vehicleType } from "../utils/vehicle"
 
 const tempObject = new THREE.Object3D()
 
-type vehicleType = {
-  id: number
+type vehiclesProps = {
   position: THREE.Vector3
   acceleration: THREE.Vector3
   velocity: THREE.Vector3
@@ -21,8 +22,10 @@ type vehicleType = {
   }
 }
 
-const useVehicles = (vehicleArray: vehicleType[]): any => {
-  const vehicles = useRef<vehicleType[]>(vehicleArray)
+const useVehicles = (vehicleArray: vehiclesProps[]): any => {
+  const vehicles = useRef<vehicleType[]>(
+    vehicleArray.map((v) => ({ id: uuidv4(), ...v }))
+  )
   const meshRef = useRef<THREE.InstancedMesh>(null!)
 
   //* rotate on first load so they follow the direction of travel
@@ -38,7 +41,11 @@ const useVehicles = (vehicleArray: vehicleType[]): any => {
       tempObject.position.set(position.x, position.y, position.z)
 
       //* Steer away from edges
-      const { width, height, depth } = v.world
+      const { width, height, depth } = v.world || {
+        width: 10,
+        height: 10,
+        depth: 10,
+      }
       avoidEdges({ width, height, depth }, v)
 
       //* Get 10 frames into the future

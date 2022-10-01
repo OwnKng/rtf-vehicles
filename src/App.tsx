@@ -15,7 +15,7 @@ const App = () => (
     <ambientLight intensity={0.4} />
     <spotLight
       intensity={0.8}
-      position={[0, 40, 0]}
+      position={[0, 50, 0]}
       lookAt={() => new THREE.Vector3(0, 0, 0)}
     />
     <Sketch />

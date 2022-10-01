@@ -13,9 +13,9 @@ import {
   flee,
   distanceTo,
 } from "../utils/vehicle"
+import { v4 as uuidv4 } from "uuid"
 
-type vehicleType = {
-  id: number
+type vehicleProps = {
   position: THREE.Vector3
   acceleration: THREE.Vector3
   velocity: THREE.Vector3
@@ -31,7 +31,6 @@ type vehicleType = {
 }
 
 const useVehicle = ({
-  id,
   position,
   acceleration,
   velocity,
@@ -44,9 +43,9 @@ const useVehicle = ({
     height: 20,
     depth: 20,
   },
-}: vehicleType): [Ref<THREE.Mesh>, any] => {
+}: vehicleProps): [Ref<THREE.Mesh>, any] => {
   const vehicleRef = useRef({
-    id,
+    id: uuidv4(),
     position,
     acceleration,
     velocity,
@@ -94,6 +93,7 @@ const useVehicle = ({
         applyRepeller(repeller, vehicleRef.current),
       distanceTo: (target: THREE.Vector3) =>
         distanceTo(target, vehicleRef.current),
+      ...vehicleRef.current,
     },
   ]
 }
