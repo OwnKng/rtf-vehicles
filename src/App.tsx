@@ -2,6 +2,7 @@ import { Canvas } from "@react-three/fiber"
 import Sketch from "./Sketch"
 import * as THREE from "three"
 import { OrbitControls } from "@react-three/drei"
+import PredatorAndPreyFlock from "./examples/PredatorAndPreyFlock"
 
 const App = () => (
   <Canvas
@@ -18,7 +19,7 @@ const App = () => (
       position={[0, 50, 0]}
       lookAt={() => new THREE.Vector3(0, 0, 0)}
     />
-    <Sketch />
+    <PredatorAndPreyFlock />
   </Canvas>
 )
 
