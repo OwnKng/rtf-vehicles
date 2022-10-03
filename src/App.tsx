@@ -4,13 +4,15 @@ import * as THREE from "three"
 import { useVehicle } from "./hooks/useVehicle"
 import ThirdPersonCamera from "./components/ThirdPersonCamera"
 import { useKeyboard } from "./hooks/useKeyboard"
+import { applyForce } from "./utils/vehicle"
+import { useRef } from "react"
 
 const playerProps = {
   position: new THREE.Vector3(0, 0, 0),
   acceleration: new THREE.Vector3(0, 0, 0),
-  velocity: new THREE.Vector3(0.1, 0, 0),
-  heading: new THREE.Vector3(),
-  maxSpeed: 0.4,
+  velocity: new THREE.Vector3(0, 0, 0),
+  heading: new THREE.Vector3(0, 0, 0),
+  maxSpeed: 0.001,
   maxForce: 0.005,
   latitude: 0,
   longitude: 0,
@@ -22,14 +24,19 @@ const playerProps = {
 }
 
 const Environment = () => {
-  const [x, y] = useKeyboard()
-  console.log(x, y)
+  const heading = useKeyboard()
+
   const [ref, api] = useVehicle(playerProps)
+
+  const headingRef = useRef<THREE.Mesh>(null!)
 
   useFrame(() => {
     //@ts-ignore
-    ref.current.rotation.z = x
-    ref.current.rotation.x = y
+    const h = heading()
+
+    const { x, y, z } = h.current
+
+    ref.current.lookAt(h.current)
   })
 
   return (
@@ -45,6 +52,14 @@ const Environment = () => {
       <mesh>
         <boxBufferGeometry args={[50, 50, 50]} />
         <meshBasicMaterial wireframe />
+      </mesh>
+      <mesh>
+        <sphereBufferGeometry args={[20, 16]} />
+        <meshBasicMaterial wireframe />
+      </mesh>
+      <mesh ref={headingRef}>
+        <sphereBufferGeometry args={[0.1, 16]} />
+        <meshBasicMaterial color='red' />
       </mesh>
     </>
   )
