@@ -21,7 +21,7 @@ type vehicleProps = {
   velocity: THREE.Vector3
   maxSpeed: number
   maxForce: number
-  heading: THREE.Vector3
+
   latitude?: number
   longitude?: number
   world?: {

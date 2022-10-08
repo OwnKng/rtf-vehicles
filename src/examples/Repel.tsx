@@ -66,8 +66,8 @@ const Repel = () => {
         <Wanderer key={`seeker-${i}`} data={d} repel={api.repel} />
       ))}
       <mesh ref={ref}>
-        <sphereBufferGeometry args={[r, 8, 8]} />
-        <meshBasicMaterial wireframe />
+        <sphereBufferGeometry args={[r, 32, 32]} />
+        <meshBasicMaterial opacity={0.5} transparent />
       </mesh>
       <mesh
         rotation={[-Math.PI * 0.5, 0, 0]}
