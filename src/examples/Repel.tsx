@@ -5,7 +5,7 @@ import { useRepeller } from "../hooks/useRepeller"
 import { useVehicle } from "../hooks/useVehicle"
 import { random } from "../utils"
 
-const vehicleData = Array.from({ length: 1000 }, () => ({
+const vehicleData = Array.from({ length: 200 }, () => ({
   position: new THREE.Vector3(random(0, 10), random(0, 10), random(0, 10)),
   acceleration: new THREE.Vector3(0, 0, 0),
   velocity: new THREE.Vector3(0, 0, 0),
@@ -24,8 +24,6 @@ const Wanderer = ({ data, repel }: any) => {
   const [vehicle, api] = useVehicle(data)
 
   useFrame(() => {
-    const wanderForce = api.wander(20)
-    api.applyForce(wanderForce)
     api.applyRepeller(repel)
   })
 

@@ -15,7 +15,7 @@ import { useRef } from "react"
 const numberOfVehicles = 250
 
 const vehiclesData = Array.from({ length: numberOfVehicles }, (_, i) => ({
-  position: new THREE.Vector3(random(0, 10), random(0, 10), random(0, 10)),
+  position: new THREE.Vector3().random().multiplyScalar(10),
   acceleration: new THREE.Vector3(0, 0, 0),
   velocity: new THREE.Vector3().random(),
   maxSpeed: 0.3,
@@ -37,7 +37,7 @@ const repellerData = [
   },
   {
     position: new THREE.Vector3(0, 0, 0),
-    radius: 8,
+    radius: 2,
     strength: 10,
   },
   {
