@@ -1,7 +1,6 @@
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { useVehicles } from "../hooks/useVehicles"
-import { random } from "../utils"
 import {
   alignVehicles,
   applyForce,
