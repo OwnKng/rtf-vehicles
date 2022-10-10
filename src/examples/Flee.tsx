@@ -14,7 +14,7 @@ const vehicleData = {
 
 type boidProps = {
   home: THREE.Vector3
-  predator: THREE.Vector3 | null
+  predator: THREE.Vector3
 }
 
 const Boid = ({ home, predator }: boidProps) => {

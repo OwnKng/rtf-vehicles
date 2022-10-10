@@ -6,6 +6,8 @@ import PredatorAndPreyFlock from "./examples/PredatorAndPreyFlock"
 import Repel from "./examples/Repel"
 import { useState } from "react"
 import PredatorAndPrey from "./examples/PredatorAndPrey"
+import Wander from "./examples/Wander"
+import Evade from "./examples/Evade"
 
 const examplesMap = {
   flock: <Flock />,
@@ -13,6 +15,8 @@ const examplesMap = {
   flockwithPredator: <PredatorAndPreyFlock />,
   repel: <Repel />,
   predator: <PredatorAndPrey />,
+  wander: <Wander />,
+  evade: <Evade />,
 }
 
 const App = () => {
